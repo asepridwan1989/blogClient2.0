@@ -1,18 +1,26 @@
 <template>
-  <div>
-    <nav class="navbar navbar-light bg-light">
+  <div class="container" style="margin-top:100px">
+    <nav class="navbar navbar-light bg-dark" style="margin-bottom:20px">
       <form class="form-inline">
         <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search" v-model="query">
         <button class="btn btn-outline-success my-2 my-sm-0" type="submit" @click="search">Search</button>
       </form>
     </nav>
-    <div class="card" style="width: auto;" v-for="(article, index) in articles" v-bind:key="index">
+    <div style="text-align:center" v-if="!loadStat">
+      <img src="https://loading.io/spinners/hourglass/lg.sandglass-time-loading-gif.gif" alt="">
+    </div>
+    <div class="card" style="width: auto; margin-bottom:20px" v-for="(article, index) in articles" v-bind:key="index" v-if="loadStat">      
     <div class="card-body">
       <h5 class="card-title">{{article.title}}</h5>
-      <h6 class="card-subtitle mb-2 text-muted">posted by: {{article.username}}</h6>
+      <h6 class="card-subtitle mb-2 text-muted">posted by: {{article.userId.name}}</h6>
+      <h6 class="card-subtitle mb-2 text-muted">user id: {{article.userId._id}}</h6>
       <h6 class="card-subtitle mb-2 text-muted">posted at: {{article.createdAt | moment("MMMM Do YYYY, h:mm:ss")}}</h6>
       <h6 class="card-subtitle mb-2 text-muted">last update: {{article.updatedAt | moment("MMMM Do YYYY, h:mm:ss")}}</h6>
-      <p style="text-align: justify;">{{article.content}}</p>
+        <div class="column has-text-centered">
+          <router-link :to="{ name: 'detail', params: { id: article._id }}">view detail</router-link>
+          <router-view/>
+        </div>
+      <!-- <p style="text-align: justify;" v-html="article.content"></p> -->
     </div>
   </div>
   </div>  
@@ -29,15 +37,15 @@ export default {
     }
   },
   computed: {
-  ...mapState([
-    'articles'
-  ])
+    ...mapState([
+      'articles', 'loadStat'
+    ])
   },
   created () {
     // let headers = {
     //     token : window.localStorage["blog-token"]
     //   }
-    // this.$store.dispatch('getAllPost', headers)
+    // this.$store.dispatch('getAllPost', headers)    
   },
   methods: {
     search () {

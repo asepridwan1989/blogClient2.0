@@ -1,5 +1,6 @@
 <template>
   <div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
     <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
       <li class="nav-item">
         <a class="nav-link active" id="pills-home-tab" data-toggle="pill" href="#pills-home" role="tab" aria-controls="pills-home" aria-selected="true">Timeline</a>
@@ -14,6 +15,7 @@
         <a class="nav-link" id="pills-contact-tab" role="tab" href="#" @click="logout">Logout</a>
       </li>
     </ul>
+    </nav>
     <div class="tab-content" id="pills-tabContent">
       <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
         <Timeline></Timeline>
@@ -29,19 +31,38 @@
 <script>
 import Profile from '../components/Profile'
 import Timeline from '../components/Timeline'
+import {mapState} from 'vuex'
 export default {
   name: 'Blog',
   components: {
     Profile,
     Timeline
   },
+  computed: {
+    ...mapState([
+      'statLog'
+    ])
+  },
   methods: {
     logout () {
       localStorage.removeItem('blog-token')
-      window.location.reload(true);
+      this.$store.commit('setStatLog', false)
+      // window.location.reload(true);
+    }
+  },
+  watch : {
+    statLog () {
+      // this.status = this.$store.state.status
+      if (this.statLog == false) {
+        this.$router.push({'path' : '/'})
+      }
     }
   },
   created () {
+    let tokenStore = localStorage.getItem('blog-token')
+    if(!tokenStore){
+      this.$router.push({'path' : '/'})
+    }
     let headers = {
         token : window.localStorage["blog-token"]
       }

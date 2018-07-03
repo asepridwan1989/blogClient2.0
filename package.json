@@ -7,11 +7,16 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
+    "@tinymce/tinymce-vue": "^1.0.8",
     "axios": "^0.18.0",
+    "babel": "^6.23.0",
     "sweetalert": "^2.1.0",
     "vue": "^2.5.16",
+    "vue-froala-wysiwyg": "^2.8.4",
+    "vue-google-signin-button": "^1.0.2",
     "vue-moment": "^4.0.0",
     "vue-router": "^3.0.1",
+    "vue-wysiwyg": "^1.7.2",
     "vuex": "^3.0.1"
   },
   "devDependencies": {

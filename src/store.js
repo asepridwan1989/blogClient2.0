@@ -8,11 +8,15 @@ export default new Vuex.Store({
   state: {
     errorLog: '',
     error:'',
-    articles: [],
+    articles: '',
     user: '',
-    artProf:[],
+    artProf:'',
     singArt: '',
-    messagewarn: ''
+    messagewarn: '',
+    statLog: '',
+    titlesing: 'default',
+    contentsing:'default',
+    loadStat:false
   },
   mutations: {
     deleteArt (state, payload) {
@@ -20,18 +24,25 @@ export default new Vuex.Store({
       let post = state.artProf
       const artdel = art.filter(data => data._id == payload);
       const posttdel = post.filter(data => data._id == payload);
-      console.log(artdel, '+', posttdel)
+      // console.log(artdel, '+', posttdel)
       state.articles.splice(state.articles.indexOf(artdel[0]), 1);
+      console.log('hasil splice',state.articles)
       state.artProf.splice(state.artProf.indexOf(posttdel[0]), 1);
       console.log('panjang nyaaaa,....',state.artProf.length)
       if(state.artProf.length ==0){
         state.artProf = undefined
       }
-      console.log('paihfj[oaihf[oah',state.artProf)
+    },
+    setLoadStat(state, payload) {
+      state.loadStat = payload
     },
     setError (state, payload) {
       console.log('commit', payload)
       state.error = payload
+    },
+    setStatLog (state, payload) {
+      state.statLog = payload
+      console.log('commit=======', state.statLog)
     },
     setWarn (state, payload) {
       state.messagewarn = payload
@@ -42,20 +53,32 @@ export default new Vuex.Store({
     },
     setArticles (state, payload) {
       state.artProf = payload
+      state.loadStat = true
     },
     setArticlesHome (state, payload) {
       state.articles = payload
+      state.loadStat = true
     },
     setOneArticle (state, payload) {
       state.singArt = payload
+      state.titlesing = payload.title
+      state.contentsing = payload.content
+      state.loadStat = true
+    },
+    setStatSing (state, payload) {
+      state.titlesing = payload
     },
     pushData (state, payload) {
-      console.log('ngepush euuuy')
-      state.articles.push(payload)
+      console.log('ngepush euuuy')      
       if(state.artProf == undefined){
         state.artProf = []
       }
+      if(state.articles == undefined){
+        state.articles = []
+      }
+      payload.userId = {name:localStorage.getItem('blog-name')}
       state.artProf.push(payload)
+      state.articles.push(payload)
     }
   },
   actions: {
@@ -80,7 +103,7 @@ export default new Vuex.Store({
           let userblog = response.data.dataUser.name
           localStorage.setItem('blog-name', userblog)
           localStorage.setItem('blog-token', token)
-          window.location.reload(true)
+          context.commit('setStatLog', true)
         })
         .catch(function (err) {
           console.log(err.response.data.message)
@@ -88,7 +111,7 @@ export default new Vuex.Store({
           context.commit('setErrorLog', errorMsg)
         })
     },
-    fbSignin: function (context, payload) {
+    fbnGoogSignin: function (context, payload) {
       axios.post('http://localhost:3000/users/signinFB', payload)
       .then(response => {
         console.log('success', response.data)
@@ -96,8 +119,7 @@ export default new Vuex.Store({
         let userblog = response.data.dataUser.name
         localStorage.setItem('blog-name', userblog)
         localStorage.setItem('blog-token', token)
-        swal('successfuly logged in')
-        window.location.reload(true)
+        context.commit('setStatLog', true)
       })
       .catch(function (err) {
         console.log(err)
@@ -133,7 +155,7 @@ export default new Vuex.Store({
             let userblog = response.data.dataUser.name
             localStorage.setItem('blog-name', userblog)
             localStorage.setItem('blog-token', token)
-            window.location.reload(true)
+            context.commit('setStatLog', true)
           })
           .catch(function (err) {
             console.log(err)
@@ -145,7 +167,7 @@ export default new Vuex.Store({
       let headers = payload.headers
       axios.post('http://localhost:3000/articles', payload.body, {headers})
       .then(response => {
-        console.log('success ieu datana', response.data)
+        console.log('success ieu datana', response.data.data)
         context.commit('pushData', response.data.data)
         swal('successfuly created new article')
       })
@@ -154,7 +176,6 @@ export default new Vuex.Store({
       })
     },
     getSingpos: function (context, payload) {
-      console.log('udinnnnnnnnn',payload)
       axios.get('http://localhost:3000/articles/profile', {headers: payload})
       .then(response => {
         console.log('success', response.data)
@@ -173,13 +194,13 @@ export default new Vuex.Store({
         .then( response => {
           context.commit('deleteArt', payload.id)
           swal('successfuly deleted article')
+          this.$router.push({'path' : '/blog'})
         })
         .catch( err => {
             // this.error = err.response.data.message
         })
     },
     getAllPost: function (context, payload) {
-      console.log('ke home action')
       axios.get('http://localhost:3000/articles/home')
       .then(response => {
         console.log('success', response.data)
@@ -194,8 +215,8 @@ export default new Vuex.Store({
       axios.put(`http://localhost:3000/articles/${payload.id}`, payload.body, {headers: payload.headers})
       .then(response => {
         console.log('success', response.data)
+        context.commit('setStatSing', 'default')
         swal('successfuly updated article') 
-        // context.commit('setArticlesHome', response.data.data)
       })
       .catch(function (err) {
         console.log(err)
@@ -212,7 +233,7 @@ export default new Vuex.Store({
       })
     },
     getOneArticle (context, payload) {
-      axios.get(`http://localhost:3000/articles/detail/${payload}`)
+      axios.get(`http://localhost:3000/articles/view/${payload}`)
       .then(response => {
         console.log('success', response.data)
         context.commit('setOneArticle', response.data.data)
@@ -220,6 +241,10 @@ export default new Vuex.Store({
       .catch(function (err) {
         console.log(err)
       })
+    },
+    makeStatLoad (context, payload) {
+      console.log('kok ga mau mampir')
+      context.commit('setLoadStat', payload)
     }
   }
 })

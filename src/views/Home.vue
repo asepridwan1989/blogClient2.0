@@ -1,6 +1,8 @@
 <template>
-  <div >
-    <img src="https://lh3.googleusercontent.com/KWjXhtV7DUZW8Kyj0W4amJjyYTzVoLnYlMKv7ymX6Pluv4Z7jwtMNr8CayUi3zgEqERzVNeN5wkM4Aqzdwu2=w1920-h920" alt="">
+  <div class="container" style="margin-top:50px">
+    <div style="text-align:center">
+      <h1 style="font-family: 'Shrikhand', cursive;">welcome to blogger app</h1>
+    </div>
     <br><br>
     <div class="container">
       <div class="row">
@@ -41,12 +43,12 @@
                       <button id="github-button" class="btn-github" style="cursor: pointer" @click='loginGithub'>
                         <i class="fa fa-github"></i> Sign in with Github
                       </button>
-                      <!-- <g-signin-button
+                      <g-signin-button
                         :params="googleSignInParams"
                         @success="onSignInSuccess"
                         @error="onSignInError">
                         Sign in with Google
-                      </g-signin-button> -->
+                      </g-signin-button>
                       <!-- <a type="button" class="btn" name="button" @click='steamSignIn'>Sign In with Steam</a> -->
                     </div>
                   </div> 
@@ -99,13 +101,13 @@ export default {
       emailLog: '',
       passwordLog: '',
       googleSignInParams: {
-        client_id: '108913565945-7db24779940ae01k701aniiue3cmj5se.apps.googleusercontent.com'
+        client_id: '169887872962-c4gse03311mkdv5n2g3qdst6o0gikjp0.apps.googleusercontent.com'
       }
     }
   },
   created: function () {
-    console.log(localStorage.getItem('blog-token'))
-    if(localStorage.getItem('blog-token') !== null){
+    let tokenStore = localStorage.getItem('blog-token')
+    if(tokenStore){
       this.$router.push({'path' : '/blog'})
     }
     (function (d, s, id) {
@@ -134,6 +136,14 @@ export default {
   },
   components: {
   },
+  watch : {
+    statLog () {
+      // this.status = this.$store.state.status
+      if (this.statLog == true) {
+        this.$router.push({'path' : '/blog'})
+      }
+    }
+  },
   methods: {
     register () {
       let body = {
@@ -149,6 +159,12 @@ export default {
       console.log('Name: ' + profile.getName())
       console.log('Image URL: ' + profile.getImageUrl())
       console.log('Email: ' + profile.getEmail())
+      let body = {
+        name: profile.getName(),
+        email: profile.getEmail(),
+        password: profile.getId()+profile.getName()
+      }
+      this.$store.dispatch('fbnGoogSignin', body)
     },
     onSignInError (error) {
       console.log('OH NOES', error)
@@ -179,7 +195,6 @@ export default {
         console.log('statusChangeCallback')
         console.log(response)
         if (response.status === 'connected') {
-          localStorage.setItem('fb_access_token', response.authResponse.accessToken)
           this.testAPI(this.$store.dispatch)
         } else {
           alert('please login')
@@ -200,12 +215,13 @@ export default {
       this.nameReg = response.name
       this.emailReg = `${idFB}@facebook.com`
       this. passwordReg = `${idFB}@facebook.com`
+      console.log(response)
       let body = {
         name: this.nameReg,
         email: this.emailReg,
         password: this.passwordReg
       }
-      cb('fbSignin', body)
+      cb('fbnGoogSignin', body)
     });
     }
   }
