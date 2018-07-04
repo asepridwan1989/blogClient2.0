@@ -42,13 +42,11 @@ export default new Vuex.Store({
     },
     setStatLog (state, payload) {
       state.statLog = payload
-      console.log('commit=======', state.statLog)
     },
     setWarn (state, payload) {
       state.messagewarn = payload
     },
     setErrorLog (state, payload) {
-      console.log('commit', payload)
       state.errorLog = payload
     },
     setArticles (state, payload) {
@@ -58,6 +56,16 @@ export default new Vuex.Store({
     setArticlesHome (state, payload) {
       state.articles = payload
       state.loadStat = true
+    },
+    setSingArticle (state, payload) {
+      state.singArt = payload
+      console.log('masuuuk woi',state.singArt)
+    },
+    setComments (state, payload) {
+      state.singArt.comments = payload
+    },
+    setLike (state) {
+      state.singArt.like = state.singArt.like + 1 
     },
     setOneArticle (state, payload) {
       state.singArt = payload
@@ -101,6 +109,8 @@ export default new Vuex.Store({
           console.log('success', response.data)
           let token = response.data.token
           let userblog = response.data.dataUser.name
+          let id = response.data.dataUser._id
+          localStorage.setItem('blog-id', id)
           localStorage.setItem('blog-name', userblog)
           localStorage.setItem('blog-token', token)
           context.commit('setStatLog', true)
@@ -117,6 +127,8 @@ export default new Vuex.Store({
         console.log('success', response.data)
         let token = response.data.token
         let userblog = response.data.dataUser.name
+        let id = response.data.dataUser._id
+        localStorage.setItem('blog-id', id)
         localStorage.setItem('blog-name', userblog)
         localStorage.setItem('blog-token', token)
         context.commit('setStatLog', true)
@@ -153,6 +165,8 @@ export default new Vuex.Store({
             console.log('success', response.data)
             let token = response.data.token
             let userblog = response.data.dataUser.name
+            let id = response.data.dataUser._id
+            localStorage.setItem('blog-id', id)
             localStorage.setItem('blog-name', userblog)
             localStorage.setItem('blog-token', token)
             context.commit('setStatLog', true)
@@ -242,9 +256,35 @@ export default new Vuex.Store({
         console.log(err)
       })
     },
+    updateLike (context, payload) {
+      axios.put(`http://localhost:3000/articles/like/${payload.id}`, payload.body, {headers: payload.headers})
+      .then(response => {
+        console.log('success', response.data)
+        context.commit('setLike')
+        swal('successfuly like article') 
+      })
+      .catch(function (err) {
+        console.log(err)
+      })
+    },
     makeStatLoad (context, payload) {
       console.log('kok ga mau mampir')
       context.commit('setLoadStat', payload)
-    }
+    },
+    uploadComment: function (context, payload) {
+      let headers = payload.headers
+      console.log('pay load',payload.body)
+      axios.put(`http://localhost:3000/articles/add-comment/${payload.id}`, payload.body, {headers})
+      .then(() => {
+        axios.get(`http://localhost:3000/articles/view/${payload.id}`)
+        .then(response => {
+          context.commit('setOneArticle', response.data.data)
+          swal('successfuly submit comment')
+        })
+      })
+      .catch(function (err) {
+        console.log(err)
+      })
+    },
   }
 })

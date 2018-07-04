@@ -46,6 +46,8 @@ export default {
   methods: {
     logout () {
       localStorage.removeItem('blog-token')
+      localStorage.removeItem('blog-name')
+      localStorage.removeItem('blog-id')
       this.$store.commit('setStatLog', false)
       // window.location.reload(true);
     }

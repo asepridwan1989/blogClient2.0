@@ -154,11 +154,6 @@ export default {
       this.$store.dispatch('signup', body)
     },
     onSignInSuccess (googleUser) {
-      const profile = googleUser.getBasicProfile()
-      console.log('ID: ' + profile.getId())
-      console.log('Name: ' + profile.getName())
-      console.log('Image URL: ' + profile.getImageUrl())
-      console.log('Email: ' + profile.getEmail())
       let body = {
         name: profile.getName(),
         email: profile.getEmail(),
@@ -167,13 +162,11 @@ export default {
       this.$store.dispatch('fbnGoogSignin', body)
     },
     onSignInError (error) {
-      console.log('OH NOES', error)
     },
     steamSignIn(){
       this.$store.dispatch('signinSteam')               
     },
     login () {
-      console.log('loggin bosss')
       let body = {
         email: this.emailLog,
         password: this.passwordLog
@@ -184,16 +177,10 @@ export default {
       })
     },
     onSignIn(googleUser) {
-      var profile = googleUser.getBasicProfile();
-      console.log('ID: ' + profile.getId()); // Do not send to your backend! Use an ID token instead.
-      console.log('Name: ' + profile.getName());
-      console.log('Image URL: ' + profile.getImageUrl());
-      console.log('Email: ' + profile.getEmail()); // This is null if the 'email' scope is not present.
+      var profile = googleUser.getBasicProfile()
     },
     loginfb () {
       window.FB.login((response) => {
-        console.log('statusChangeCallback')
-        console.log(response)
         if (response.status === 'connected') {
           this.testAPI(this.$store.dispatch)
         } else {
@@ -208,14 +195,11 @@ export default {
       })
     },
     testAPI (cb) {
-      console.log('Welcome!  Fetching your information.... ')
       FB.api('/me', {fields: ['name','email','picture']}, function(response) {
-      // console.log('ini reposensnensne---' + JSON.stringify(response.picture.data.url))
       let idFB = response.id
       this.nameReg = response.name
       this.emailReg = `${idFB}@facebook.com`
       this. passwordReg = `${idFB}@facebook.com`
-      console.log(response)
       let body = {
         name: this.nameReg,
         email: this.emailReg,
