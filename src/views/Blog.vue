@@ -61,6 +61,7 @@ export default {
     }
   },
   created () {
+    console.log('inisialisasi')
     let tokenStore = localStorage.getItem('blog-token')
     if(!tokenStore){
       this.$router.push({'path' : '/'})

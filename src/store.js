@@ -24,11 +24,8 @@ export default new Vuex.Store({
       let post = state.artProf
       const artdel = art.filter(data => data._id == payload);
       const posttdel = post.filter(data => data._id == payload);
-      // console.log(artdel, '+', posttdel)
       state.articles.splice(state.articles.indexOf(artdel[0]), 1);
-      console.log('hasil splice',state.articles)
       state.artProf.splice(state.artProf.indexOf(posttdel[0]), 1);
-      console.log('panjang nyaaaa,....',state.artProf.length)
       if(state.artProf.length ==0){
         state.artProf = undefined
       }
@@ -37,7 +34,6 @@ export default new Vuex.Store({
       state.loadStat = payload
     },
     setError (state, payload) {
-      console.log('commit', payload)
       state.error = payload
     },
     setStatLog (state, payload) {
@@ -59,7 +55,6 @@ export default new Vuex.Store({
     },
     setSingArticle (state, payload) {
       state.singArt = payload
-      console.log('masuuuk woi',state.singArt)
     },
     setComments (state, payload) {
       state.singArt.comments = payload
@@ -76,8 +71,7 @@ export default new Vuex.Store({
     setStatSing (state, payload) {
       state.titlesing = payload
     },
-    pushData (state, payload) {
-      console.log('ngepush euuuy')      
+    pushData (state, payload) {     
       if(state.artProf == undefined){
         state.artProf = []
       }
@@ -91,22 +85,18 @@ export default new Vuex.Store({
   },
   actions: {
     signup: function (context, payload) {
-      console.log(payload)
-      axios.post('http://localhost:3000/users/signup', payload)
+      axios.post('http://35.240.160.136/users/signup', payload)
         .then(response => {
-          console.log('success', response)
           swal('successfuly registered')
         })
         .catch(function (err) {
-          console.log(err.response.data.message)
           let errorMsg = err.response.data.message
           context.commit('setError', errorMsg)
         })
     },
     signin: function (context, payload) {
-      axios.post('http://localhost:3000/users/signin', payload)
+      axios.post('http://35.240.160.136/users/signin', payload)
         .then(response => {
-          console.log('success', response.data)
           let token = response.data.token
           let userblog = response.data.dataUser.name
           let id = response.data.dataUser._id
@@ -116,15 +106,13 @@ export default new Vuex.Store({
           context.commit('setStatLog', true)
         })
         .catch(function (err) {
-          console.log(err.response.data.message)
           let errorMsg = err.response.data.message
           context.commit('setErrorLog', errorMsg)
         })
     },
     fbnGoogSignin: function (context, payload) {
-      axios.post('http://localhost:3000/users/signinFB', payload)
+      axios.post('http://35.240.160.136/users/signinFB', payload)
       .then(response => {
-        console.log('success', response.data)
         let token = response.data.token
         let userblog = response.data.dataUser.name
         let id = response.data.dataUser._id
@@ -140,7 +128,7 @@ export default new Vuex.Store({
     signinSteam: function (context, payload) {
       axios({
         method: 'get',
-        url: 'http://localhost:3000/users/steam/authenticate'
+        url: 'http://35.240.160.136/users/steam/authenticate'
       }).then(response => {
 
         var myWindow = window.open(response.data, "myWindow", "width=500, height=700");
@@ -159,10 +147,8 @@ export default new Vuex.Store({
             email: data.email,
             password: data.id + data.alias
           }
-          console.log(body)
-          axios.post('http://localhost:3000/users/signinFB', body)
+          axios.post('http://35.240.160.136/users/signinFB', body)
           .then(response => {
-            console.log('success', response.data)
             let token = response.data.token
             let userblog = response.data.dataUser.name
             let id = response.data.dataUser._id
@@ -176,12 +162,11 @@ export default new Vuex.Store({
           })
         })
       })
-    },
+    },    
     upload: function (context, payload) {
       let headers = payload.headers
-      axios.post('http://localhost:3000/articles', payload.body, {headers})
+      axios.post('http://35.240.160.136/articles', payload.body, {headers})
       .then(response => {
-        console.log('success ieu datana', response.data.data)
         context.commit('pushData', response.data.data)
         swal('successfuly created new article')
       })
@@ -190,9 +175,8 @@ export default new Vuex.Store({
       })
     },
     getSingpos: function (context, payload) {
-      axios.get('http://localhost:3000/articles/profile', {headers: payload})
+      axios.get('http://35.240.160.136/articles/profile', {headers: payload})
       .then(response => {
-        console.log('success', response.data)
         if(response.data.message == 'you dont have any article'){
           context.commit('setWarn', response.data.message)
         }
@@ -203,8 +187,7 @@ export default new Vuex.Store({
       })
     },
     deleteArticle: function (context, payload) {
-      console.log('id yang mau dikirim',payload.id)
-      axios.delete(`http://localhost:3000/articles/${payload.id}`, {headers: payload.headers})
+      axios.delete(`http://35.240.160.136/articles/${payload.id}`, {headers: payload.headers})
         .then( response => {
           context.commit('deleteArt', payload.id)
           swal('successfuly deleted article')
@@ -214,10 +197,9 @@ export default new Vuex.Store({
             // this.error = err.response.data.message
         })
     },
-    getAllPost: function (context, payload) {
-      axios.get('http://localhost:3000/articles/home')
+    getAllPost: function (context) {
+      axios.get('http://35.240.160.136/articles/home')
       .then(response => {
-        console.log('success', response.data)
         context.commit('setArticlesHome', response.data.data)
       })
       .catch(function (err) {
@@ -225,10 +207,8 @@ export default new Vuex.Store({
       })
     },
     updateArticle: function (context, payload) {
-      console.log(payload)
-      axios.put(`http://localhost:3000/articles/${payload.id}`, payload.body, {headers: payload.headers})
+      axios.put(`http://35.240.160.136/articles/${payload.id}`, payload.body, {headers: payload.headers})
       .then(response => {
-        console.log('success', response.data)
         context.commit('setStatSing', 'default')
         swal('successfuly updated article') 
       })
@@ -237,9 +217,8 @@ export default new Vuex.Store({
       })
     },
     search: function (context, payload) {
-      axios.get(`http://localhost:3000/articles/search?title=${payload}`)
+      axios.get(`http://35.240.160.136/articles/search?title=${payload}`)
       .then(response => {
-        console.log('success', response.data)
         context.commit('setArticlesHome', response.data.data)
       })
       .catch(function (err) {
@@ -247,9 +226,8 @@ export default new Vuex.Store({
       })
     },
     getOneArticle (context, payload) {
-      axios.get(`http://localhost:3000/articles/view/${payload}`)
+      axios.get(`http://35.240.160.136/articles/view/${payload}`)
       .then(response => {
-        console.log('success', response.data)
         context.commit('setOneArticle', response.data.data)
       })
       .catch(function (err) {
@@ -257,9 +235,8 @@ export default new Vuex.Store({
       })
     },
     updateLike (context, payload) {
-      axios.put(`http://localhost:3000/articles/like/${payload.id}`, payload.body, {headers: payload.headers})
+      axios.put(`http://35.240.160.136/articles/like/${payload.id}`, payload.body, {headers: payload.headers})
       .then(response => {
-        console.log('success', response.data)
         context.commit('setLike')
         swal('successfuly like article') 
       })
@@ -268,15 +245,13 @@ export default new Vuex.Store({
       })
     },
     makeStatLoad (context, payload) {
-      console.log('kok ga mau mampir')
       context.commit('setLoadStat', payload)
     },
     uploadComment: function (context, payload) {
       let headers = payload.headers
-      console.log('pay load',payload.body)
-      axios.put(`http://localhost:3000/articles/add-comment/${payload.id}`, payload.body, {headers})
+      axios.put(`http://35.240.160.136/articles/add-comment/${payload.id}`, payload.body, {headers})
       .then(() => {
-        axios.get(`http://localhost:3000/articles/view/${payload.id}`)
+        axios.get(`http://35.240.160.136/articles/view/${payload.id}`)
         .then(response => {
           context.commit('setOneArticle', response.data.data)
           swal('successfuly submit comment')

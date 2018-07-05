@@ -154,6 +154,7 @@ export default {
       this.$store.dispatch('signup', body)
     },
     onSignInSuccess (googleUser) {
+      const profile = googleUser.getBasicProfile()
       let body = {
         name: profile.getName(),
         email: profile.getEmail(),
@@ -162,6 +163,7 @@ export default {
       this.$store.dispatch('fbnGoogSignin', body)
     },
     onSignInError (error) {
+      console.log('OH NOES', error)
     },
     steamSignIn(){
       this.$store.dispatch('signinSteam')               

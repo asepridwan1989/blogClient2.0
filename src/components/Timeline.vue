@@ -10,7 +10,7 @@
       <img src="https://loading.io/spinners/hourglass/lg.sandglass-time-loading-gif.gif" alt="">
        <h1>Please Wait</h1>
     </div>
-    <div class="card" style="width: auto; margin-bottom:20px" v-for="(article, index) in articles" v-bind:key="index" v-if="loadStat">      
+    <div class="card" style="width: auto; margin-bottom:20px" v-for="(article, index) in articles" v-bind:key="index" v-if="loadStat"> 
       <div class="card-body">
         <h5 class="card-title">{{article.title}}</h5>
         <h6 class="card-subtitle mb-2 text-muted">like: {{article.like}}</h6>
